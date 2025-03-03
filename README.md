@@ -3,3 +3,6 @@
 
 # streamlit 웹 url
 - https://portfoliom.streamlit.app/
+
+# 샘플 데이터를 통한 구현 결과 시연
+![Streamlit Demo](path/to/your/video.mp4)

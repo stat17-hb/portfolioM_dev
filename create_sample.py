@@ -47,7 +47,6 @@ num_trades = len(dates)
 trade_types = ["Buy", "Sell"]
 
 trade_data = []
-portfolio_value = 10000  # 초기 포트폴리오 가치
 holdings = {ticker: 0 for ticker in tickers}  # 각 종목별 보유 수량 추적
 
 for i in range(num_trades):
@@ -68,13 +67,11 @@ for i in range(num_trades):
         quantity = np.random.randint(1, 20)  # 1~20주 랜덤 매수
         holdings[symbol] += quantity
         total_value = quantity * price
-        portfolio_value += total_value
     else:
         max_sell = holdings[symbol]  # 현재 보유 수량까지만 매도 가능
         quantity = np.random.randint(1, max_sell + 1)  # 1주부터 보유 수량까지 랜덤 매도
         holdings[symbol] -= quantity
         total_value = quantity * price
-        portfolio_value -= total_value
 
     trade_data.append([
         date.strftime("%Y-%m-%d"), 
@@ -82,14 +79,13 @@ for i in range(num_trades):
         trade_type, 
         quantity, 
         round(price, 2), 
-        round(total_value, 2), 
-        round(portfolio_value, 2)
+        round(total_value, 2)
     ])
 
 # 데이터프레임 생성
 trade_df = pd.DataFrame(
     trade_data, 
-    columns=["Date", "Symbol", "Type", "Quantity", "Price", "Total Value", "Portfolio Value"]
+    columns=["Date", "Symbol", "Type", "Quantity", "Price", "Total Value"]
 )
 
 # CSV 파일 저장

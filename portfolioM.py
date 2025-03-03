@@ -60,8 +60,7 @@ sample_data = {
     'Type': ['Buy', 'Buy', 'Sell', 'Buy', 'Sell'],
     'Quantity': [10, 5, 5, 8, 2],
     'Price': [150, 700, 160, 300, 750],
-    'Total Value': [1500, 3500, 800, 2400, 1500],
-    'Portfolio Value': [5000, 9000, 10000, 12500, 14000]
+    'Total Value': [1500, 3500, 800, 2400, 1500]
 }
 sample_df = pd.DataFrame(sample_data)
 
@@ -76,7 +75,6 @@ with col1:
     - **Quantity**: 거래 수량
     - **Price**: 거래 단가
     - **Total Value**: 거래 금액
-    - **Portfolio Value**: 포트폴리오 총 가치
     """)
 with col2:
     st.write("샘플 데이터:")
@@ -95,9 +93,47 @@ st.caption("• Excel 파일 (.xlsx)")
 st.caption("• 텍스트 파일 (.txt) - 탭으로 구분된 데이터")
 
 if uploaded_file:
-    df = read_file(uploaded_file)  # read_file 함수 사용
-    st.write("업로드된 데이터 미리보기:")
-    st.dataframe(df)
+    df = read_file(uploaded_file)
+    if df is not None:
+        # Portfolio Value 계산
+        df['Date'] = pd.to_datetime(df['Date'])
+        df = df.sort_values('Date')
+        
+        # 각 거래일자별 포트폴리오 가치 계산
+        portfolio_values = []
+        current_holdings = {}  # 각 종목별 보유 수량과 평균 단가 추적
+        current_value = 0
+        
+        for _, row in df.iterrows():
+            symbol = row['Symbol']
+            quantity = row['Quantity']
+            price = row['Price']
+            trade_type = row['Type']
+            
+            # 매수/매도에 따른 보유 수량 및 평균단가 업데이트
+            if symbol not in current_holdings:
+                current_holdings[symbol] = {'quantity': 0, 'avg_price': 0}
+                
+            if trade_type == 'Buy':
+                # 매수 시 평균단가 계산
+                current_qty = current_holdings[symbol]['quantity']
+                current_avg = current_holdings[symbol]['avg_price']
+                new_qty = current_qty + quantity
+                new_avg = ((current_qty * current_avg) + (quantity * price)) / new_qty
+                
+                current_holdings[symbol]['quantity'] = new_qty
+                current_holdings[symbol]['avg_price'] = new_avg
+                current_value += quantity * price
+            else:  # Sell
+                current_holdings[symbol]['quantity'] -= quantity
+                current_value -= quantity * price
+            
+            portfolio_values.append(current_value)
+        
+        df['Portfolio Value'] = portfolio_values
+        
+        st.write("업로드된 데이터 미리보기:")
+        st.dataframe(df)
 
 def calculate_portfolio_performance(df, start_date=None, end_date=None):
     if start_date is not None and end_date is not None:

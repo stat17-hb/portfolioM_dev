@@ -5,4 +5,5 @@
 - https://portfoliom.streamlit.app/
 
 # 샘플 데이터를 통한 구현 결과 시연
-![[Streamlit Demo](streamlit-portfolioM_demo.mp4)](https://github.com/stat17-hb/portfolioM_dev/blob/main/streamlit-portfolioM_demo.mp4)
+https://github.com/user-attachments/assets/bd0654b9-ff26-4f32-83f0-e275017c2ef4
+
